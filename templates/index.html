@@ -1,0 +1,98 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+  <meta charset="UTF-8" />
+  <title>Анализ парковки ТЦ</title>
+  <style>
+    body {
+      display: grid;
+      gap: 20px;
+      place-items: center;
+      background-color: #f8f2f2;
+      font-family: "Helvetica Neue", Helvetica, Arial, sans-serif;
+    }
+    h2,h3 {
+      text-align: center;
+      display: none
+    }
+  </style>
+</head>
+<body>
+<div>
+<h1>Анализ загруженности парковки ТЦ</h1>
+</div>
+<div>
+<input type="file" id="fileInput" accept="image/*,video/*" />
+</div>
+<div>
+<button id="processBtn">Запустить обработку</button>
+</div>
+
+<table>
+  <tr>
+    <td style="vertical-align: top;">
+    <h2>Исходное изображение</h2>
+    <img id="originalImg" src="" alt="Исходное изображение" style="max-width: 500px; display: none;"/>
+    </td>
+
+    <td style="vertical-align: top;">
+    <h2>Обработанное изображение</h2>
+    <img id="resultImg" src="" alt="Результат анализа" style="max-width: 500px; display: none;"/>
+  <tr>
+</table>	
+<div>
+<h3>Статистика</h3>
+<p id="stats"></p>
+</div>	
+<div>
+<h3>Выгрузка</h3>
+<button id="exportExcel">Выгрузить в Excel</button>
+</div>
+
+<script>
+document.getElementById('processBtn').onclick = () => {
+    const fileInput = document.getElementById('fileInput');
+    if (fileInput.files.length === 0) {
+        alert('Пожалуйста, выберите файл');
+        return;
+    }
+    const file = fileInput.files[0];
+
+    // Отображение исходного изображения
+    const reader = new FileReader();
+    reader.onload = function(e) {
+        document.getElementById('originalImg').src = e.target.result;
+        document.getElementById('originalImg').style.display = 'block';
+    };
+    reader.readAsDataURL(file);
+
+    // Отправка файла на сервер
+    const formData = new FormData();
+    formData.append('file', file);
+
+    fetch('/upload', {
+        method: 'POST',
+        body: formData
+    })
+    .then(res => res.json())
+    .then(data => {
+        // Отобразить обработанное изображение
+        document.getElementById('resultImg').src = data.result_image;
+        document.getElementById('resultImg').style.display = 'block';
+
+        // Отобразить статистику
+	document.querySelectorAll('h2').forEach(h2 => {h2.style.display = `block`});
+	document.querySelector('h3').style.display = `block`;
+        document.getElementById('stats').innerText = `Обнаружено пустых мест: ${data.spots}`;
+    })
+    .catch(err => {
+        console.error('Ошибка:', err);
+        alert('Произошла ошибка при обработке');
+    });
+};
+document.getElementById('exportExcel').onclick = () => {
+  window.location.href = '/export_excel';
+};
+</script>
+</body>
+</html>
