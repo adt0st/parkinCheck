@@ -9,8 +9,6 @@
 * Сохранение истории обработок в базе данных SQLAlchemy
 * Генерация файла Excel с историей обработок
 
----
-
 ## Используемые технологии
 
 * HTML5
@@ -22,8 +20,6 @@
 * OpenCV
 * Openpyxl
 * SQLAlchemy
-
----
 
 ## Установка
 
@@ -56,8 +52,6 @@ venv\Scripts\activate
 ```bash
 pip install -r requirements.txt
 ```
-
----
 
 ## Запуск
 
